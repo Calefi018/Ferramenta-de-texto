@@ -103,12 +103,14 @@
         async function obterResumo(mensagem) {
             const urlDoAppScript = 'https://script.google.com/macros/s/AKfycbzRJbbP0IAHJHKanX6LnaT_oNBYTHVwSn2HNx849WH_rluL1LUptMrnvTfrCxoulOBOAQ/exec'; 
             try {
+                // *** CÓDIGO DE COMUNICAÇÃO CORRIGIDO ***
                 const response = await fetch(urlDoAppScript, {
                     method: 'POST',
-                    mode: 'cors',
-                    credentials: 'omit',
-                    headers: {'Content-Type': 'text/plain;charset=utf-8'},
-                    body: JSON.stringify({ texto: mensagem })
+                    redirect: 'follow', // Adicionado para maior compatibilidade
+                    body: JSON.stringify({ texto: mensagem }),
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8", // Necessário para Apps Script
+                    }
                 });
                 const data = await response.json();
                 if (data.erro) { throw new Error(data.erro); }
@@ -146,8 +148,6 @@
                     const assuntoResumido = await obterResumo(mensagemOriginal);
                     
                     const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
-                    
-                    // *** ALTERAÇÃO AQUI: Removemos o limite de 200 caracteres ***
                     const mensagemCompleta = mensagemOriginal;
                     
                     let block = dataLine + '\n' + mensagemCompleta;

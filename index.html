@@ -4,69 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferramenta de Formatação</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 900px;
-            margin: 20px auto;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-        h1, h2, p { text-align: center; }
-        label { font-weight: bold; margin-top: 15px; display: block; }
-        textarea {
-            width: 98%;
-            min-height: 150px;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid;
-            border-radius: 6px;
-            font-size: 14px;
-            resize: vertical;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-        }
-        .buttons { text-align: center; margin-top: 20px; }
-        button {
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-            transition: background-color 0.3s;
-        }
-        button:disabled {
-            background-color: #5a6268;
-            cursor: not-allowed;
-        }
-        hr { border: 0; height: 1px; margin: 40px 0; transition: background-color 0.3s; }
-        #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-        .light-theme { background-color: #f0f2f5; color: #1c1e21; }
-        .light-theme .container { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); }
-        .light-theme textarea { background-color: #ffffff; color: #1c1e21; border-color: #dddfe2; }
-        .light-theme hr { background-color: #dddfe2; }
-        .light-theme button { background-color: #1877f2; }
-        .light-theme button:hover { background-color: #166fe5; }
-        .light-theme .copy-button { background-color: #42b72a; }
-        .light-theme .copy-button:hover { background-color: #36a420; }
-        .dark-theme { background-color: #18191a; color: #e4e6eb; }
-        .dark-theme .container { background-color: #242526; box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.3); }
-        .dark-theme textarea { background-color: #3a3b3c; color: #e4e6eb; border-color: #4e4f50; }
-        .dark-theme hr { background-color: #3a3b3c; }
-        .dark-theme button { background-color: #2374e1; }
-        .dark-theme button:hover { background-color: #3982e4; }
-        .dark-theme .copy-button { background-color: #3d9c28; }
-        .dark-theme .copy-button:hover { background-color: #49b831; }
-    </style>
+    <style>body{font-family:sans-serif;margin:0;padding:20px;transition:background-color .3s,color .3s}.container{background-color:#fff;padding:30px;border-radius:8px;width:80%;max-width:900px;margin:20px auto;transition:background-color .3s,box-shadow .3s}h1,h2,p{text-align:center}label{font-weight:700;margin-top:15px;display:block}textarea{width:98%;min-height:150px;padding:10px;margin-top:5px;border:1px solid;border-radius:6px;font-size:14px;resize:vertical;transition:background-color .3s,color .3s,border-color .3s}.buttons{text-align:center;margin-top:20px}button{color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:16px;cursor:pointer;margin:5px;transition:background-color .3s}button:disabled{background-color:#5a6268;cursor:not-allowed}hr{border:0;height:1px;margin:40px 0;transition:background-color .3s}#theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}.light-theme{background-color:#f0f2f5;color:#1c1e21}.light-theme .container{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.1)}.light-theme textarea{background-color:#fff;color:#1c1e21;border-color:#dddfe2}.light-theme hr{background-color:#dddfe2}.light-theme button{background-color:#1877f2}.light-theme button:hover{background-color:#166fe5}.light-theme .copy-button{background-color:#42b72a}.light-theme .copy-button:hover{background-color:#36a420}.dark-theme{background-color:#18191a;color:#e4e6eb}.dark-theme .container{background-color:#242526;box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 16px rgba(0,0,0,.3)}.dark-theme textarea{background-color:#3a3b3c;color:#e4e6eb;border-color:#4e4f50}.dark-theme hr{background-color:#3a3b3c}.dark-theme button{background-color:#2374e1}.dark-theme button:hover{background-color:#3982e4}.dark-theme .copy-button{background-color:#3d9c28}.dark-theme .copy-button:hover{background-color:#49b831}</style>
 </head>
 <body class="light-theme">
 
@@ -100,6 +38,9 @@
             document.body.className = savedTheme;
         })();
 
+        // Função para criar uma pausa
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
         async function obterResumo(mensagem) {
             const urlDoServidor = 'http://localhost:5000/resumir'; 
             try {
@@ -112,7 +53,6 @@
                 const data = await response.json();
                 return data.resumo || "Resumo não disponível";
             } catch (error) {
-                console.error("Erro ao conectar com o servidor local:", error);
                 return "ERRO: Servidor local não encontrado";
             }
         }
@@ -122,7 +62,7 @@
             const outputElement = document.getElementById('output');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde, contactando o servidor local para resumir os textos...';
+            outputElement.value = 'Iniciando... (Respeitando o limite de 15 pedidos/minuto)';
 
             const inputText = document.getElementById('csvInput').value.trim();
             const lines = inputText.split(/(?=\d{6};)/); 
@@ -130,8 +70,11 @@
 
             const COL_CLIENTE = 6, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
 
-            for (const line of lines) {
-                if (line.trim() === '' || line.toLowerCase().startsWith('id;tipo;sla')) continue;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.trim() === '') continue;
+                
+                outputElement.value = `Processando cliente ${i + 1} de ${lines.length}...`;
                 
                 const columns = line.split(';');
                 if (columns.length > COL_WHATSAPP) {
@@ -144,8 +87,13 @@
                     const assuntoResumido = await obterResumo(mensagemOriginal);
                     
                     const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
-                    
                     allBlocks.push(dataLine + '\n' + mensagemOriginal);
+
+                    // *** ALTERAÇÃO PRINCIPAL AQUI ***
+                    // Pausa de 4 segundos para não exceder o limite da API (15/minuto)
+                    if (i < lines.length - 1) { // Não pausa depois do último item
+                        await sleep(4000);
+                    }
                 }
             }
             

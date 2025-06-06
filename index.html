@@ -22,8 +22,9 @@
         }
         h1, h2, p { text-align: center; }
         label { font-weight: bold; margin-top: 15px; display: block; }
-        textarea, input[type="text"] {
+        textarea {
             width: 98%;
+            min-height: 150px;
             padding: 10px;
             margin-top: 5px;
             border: 1px solid;
@@ -32,7 +33,6 @@
             resize: vertical;
             transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
-        textarea { min-height: 120px; }
         .buttons { text-align: center; margin-top: 20px; }
         button {
             color: white;
@@ -45,14 +45,10 @@
             transition: background-color 0.3s;
         }
         hr { border: 0; height: 1px; margin: 40px 0; transition: background-color 0.3s; }
-
-        /* Estilos do Botão de Tema */
         #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-
-        /* Tema Claro (Padrão) */
         .light-theme { background-color: #f0f2f5; color: #1c1e21; }
         .light-theme .container { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); }
-        .light-theme textarea, .light-theme input[type="text"] { background-color: #ffffff; color: #1c1e21; border-color: #dddfe2; }
+        .light-theme textarea { background-color: #ffffff; color: #1c1e21; border-color: #dddfe2; }
         .light-theme hr { background-color: #dddfe2; }
         .light-theme button { background-color: #1877f2; }
         .light-theme button:hover { background-color: #166fe5; }
@@ -60,11 +56,9 @@
         .light-theme .secondary-button:hover { background-color: #5a6268; }
         .light-theme .copy-button { background-color: #42b72a; }
         .light-theme .copy-button:hover { background-color: #36a420; }
-
-        /* Tema Escuro */
         .dark-theme { background-color: #18191a; color: #e4e6eb; }
         .dark-theme .container { background-color: #242526; box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.3); }
-        .dark-theme textarea, .dark-theme input[type="text"] { background-color: #3a3b3c; color: #e4e6eb; border-color: #4e4f50; }
+        .dark-theme textarea { background-color: #3a3b3c; color: #e4e6eb; border-color: #4e4f50; }
         .dark-theme hr { background-color: #3a3b3c; }
         .dark-theme button { background-color: #2374e1; }
         .dark-theme button:hover { background-color: #3982e4; }
@@ -80,23 +74,19 @@
 
     <div class="container">
         <h1>Formatador de Relatórios CSV</h1>
-        
         <label for="csvInput">1. Cole o conteúdo do seu CSV aqui:</label>
         <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
         
-        <label for="customMessage">2. Mensagem Personalizada (Opcional):</label>
-        <textarea id="customMessage" placeholder="Digite a mensagem que aparecerá abaixo de cada registro..." style="min-height: 40px;"></textarea>
-
         <div class="buttons">
             <button onclick="formatarDados(true)">Formatar COM Assunto</button>
             <button class="secondary-button" onclick="formatarDados(false)">Formatar SEM Assunto</button>
         </div>
         
-        <label for="output">3. Resultado Formatado:</label>
+        <label for="output">2. Resultado Formatado:</label>
         <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
 
         <div class="buttons">
-            <button class="copy-button" onclick="copiarCsv()">Copiar Resultado</button>
+            <button class="copy-button" onclick="copiarResultado()">Copiar Resultado</button>
         </div>
     </div>
 
@@ -104,16 +94,14 @@
 
     <div class="container">
         <h2>Conversor para Maiúsculas</h2>
-        <p>Cole qualquer texto no campo abaixo e clique para converter.</p>
         <textarea id="upperInput" placeholder="Cole o texto que deseja converter para maiúsculas..."></textarea>
         <div class="buttons">
             <button onclick="converterParaMaiusculas()">Converter para Maiúsculas</button>
-            <button class="copy-button" onclick="copiarMaiusculas()">Copiar Resultado</button>
+            <button class="copy-button" onclick="copiarResultadoMaiusculas()">Copiar Resultado</button>
         </div>
     </div>
 
     <script>
-        // --- LÓGICA DO TEMA ---
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-theme');
             document.body.classList.toggle('light-theme', !isDark);
@@ -124,58 +112,52 @@
             document.body.className = savedTheme;
         })();
 
-        // --- FUNÇÕES DO FORMATADOR CSV ---
         function formatarDados(incluirAssunto) {
             const inputText = document.getElementById('csvInput').value;
-            const customMessage = document.getElementById('customMessage').value;
             const lines = inputText.split('\n');
-            let formattedLines = [];
-            const COL_CLIENTE = 6, COL_ASSUNTO = 7, COL_BAIRRO = 11, COL_WHATSAPP = 13;
+            let formattedBlocks = [];
+
+            // Novos índices de coluna baseados no seu último exemplo
+            const COL_CLIENTE = 6, COL_ASSUNTO = 7, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
+
             for (const line of lines) {
                 if (line.trim() === '' || line.toLowerCase().startsWith('id;tipo;sla')) continue;
                 const columns = line.split(';');
                 if (columns.length > COL_WHATSAPP) {
                     const cleanField = (text) => text ? text.trim().replace(/^"|"$/g, '') : '';
+                    
                     const cliente = cleanField(columns[COL_CLIENTE]);
                     const bairro = cleanField(columns[COL_BAIRRO]);
                     const whatsapp = cleanField(columns[COL_WHATSAPP]);
                     const assuntoFinal = incluirAssunto ? cleanField(columns[COL_ASSUNTO]) : 'assunto';
+                    const mensagem = cleanField(columns[COL_MENSAGEM]).substring(0, 200);
                     
-                    const formattedLine = `${cliente} - ${bairro} - ${assuntoFinal} - ${whatsapp} - D1`;
-                    formattedLines.push(formattedLine);
-
-                    if (customMessage.trim() !== '') {
-                        formattedLines.push(customMessage);
-                    }
+                    const dataLine = `${cliente} - ${bairro} - ${assuntoFinal} - ${whatsapp} - D1`;
                     
-                    // Adiciona a linha em branco para separar os blocos
-                    formattedLines.push(''); 
+                    // Adiciona a linha de dados e a mensagem ao bloco
+                    let block = dataLine + '\n' + mensagem;
+                    formattedBlocks.push(block);
                 }
             }
-            // Remove a última linha em branco extra
-            if(formattedLines.length > 0) {
-                formattedLines.pop();
-            }
-
-            document.getElementById('output').value = formattedLines.join('\n');
+            // Junta os blocos com uma linha em branco entre eles
+            document.getElementById('output').value = formattedBlocks.join('\n\n');
         }
 
-        function copiarCsv() {
+        function copiarResultado() {
             const outputElement = document.getElementById('output');
             if(outputElement.value) {
-                navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado do CSV copiado!'));
+                navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado copiado!'));
             } else {
                 alert('Nada para copiar!');
             }
         }
 
-        // --- FUNÇÕES DO CONVERSOR PARA MAIÚSCULAS ---
         function converterParaMaiusculas() {
             const inputElement = document.getElementById('upperInput');
             inputElement.value = inputElement.value.toUpperCase();
         }
 
-        function copiarMaiusculas() {
+        function copiarResultadoMaiusculas() {
             const upperElement = document.getElementById('upperInput');
             if(upperElement.value) {
                 navigator.clipboard.writeText(upperElement.value).then(() => alert('Texto em maiúsculas copiado!'));

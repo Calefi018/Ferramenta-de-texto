@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramentas de Texto</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        h1, h2, p {
+            text-align: center;
+        }
+        textarea {
+            width: 98%;
+            min-height: 150px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #dddfe2;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #166fe5;
+        }
+        .secondary-button {
+             background-color: #6c757d;
+        }
+        .secondary-button:hover {
+            background-color: #5a6268;
+        }
+        .copy-button {
+            background-color: #42b72a;
+        }
+        .copy-button:hover {
+            background-color: #36a420;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background-color: #dddfe2;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Formatador de Relatórios CSV</h1>
+        <p>Copie os dados do seu CSV e cole no campo abaixo para formatar.</p>
+        
+        <textarea id="csvInput" placeholder="Cole o conteúdo do seu CSV aqui..."></textarea>
+        
+        <div class="buttons">
+            <button onclick="formatarDados(true)">Formatar COM Assunto</button>
+            <button class="secondary-button" onclick="formatarDados(false)">Formatar SEM Assunto</button>
+        </div>
+        
+        <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
+
+        <div class="buttons">
+            <button class="copy-button" onclick="copiarCsv()">Copiar Resultado CSV</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="container">
+        <h2>Conversor para Maiúsculas</h2>
+        <p>Cole qualquer texto no campo abaixo e clique para converter.</p>
+        <textarea id="upperInput" placeholder="Cole o texto que deseja converter para maiúsculas..."></textarea>
+        <div class="buttons">
+            <button onclick="converterParaMaiusculas()">Converter para Maiúsculas</button>
+            <button class="copy-button" onclick="copiarMaiusculas()">Copiar Resultado</button>
+        </div>
+    </div>
+
+    <script>
+        // --- FUNÇÕES DO FORMATADOR CSV ---
+        function formatarDados(incluirAssunto) {
+            const inputText = document.getElementById('csvInput').value;
+            const lines = inputText.split('\n');
+            let formattedLines = [];
+
+            const COL_CLIENTE = 6;
+            const COL_ASSUNTO = 7;
+            const COL_BAIRRO = 11;
+            const COL_WHATSAPP = 13;
+
+            for (const line of lines) {
+                if (line.trim() === '' || line.toLowerCase().startsWith('id;tipo;sla')) {
+                    continue;
+                }
+                const columns = line.split(';');
+                if (columns.length > COL_WHATSAPP) {
+                    const cleanField = (text) => text ? text.trim().replace(/^"|"$/g, '') : '';
+                    
+                    const cliente = cleanField(columns[COL_CLIENTE]);
+                    const bairro = cleanField(columns[COL_BAIRRO]);
+                    const whatsapp = cleanField(columns[COL_WHATSAPP]);
+                    
+                    // Lógica para decidir qual assunto usar
+                    const assuntoFinal = incluirAssunto ? cleanField(columns[COL_ASSUNTO]) : 'assunto';
+
+                    const formattedLine = `${cliente} - ${bairro} - ${assuntoFinal} - ${whatsapp} - D1`;
+                    formattedLines.push(formattedLine);
+                }
+            }
+            document.getElementById('output').value = formattedLines.join('\n');
+        }
+
+        function copiarCsv() {
+            const outputElement = document.getElementById('output');
+            if(outputElement.value) {
+                navigator.clipboard.writeText(outputElement.value).then(() => {
+                    alert('Resultado do CSV copiado!');
+                });
+            } else {
+                alert('Nada para copiar!');
+            }
+        }
+
+        // --- FUNÇÕES DO CONVERSOR PARA MAIÚSCULAS ---
+        function converterParaMaiusculas() {
+            const inputElement = document.getElementById('upperInput');
+            inputElement.value = inputElement.value.toUpperCase();
+        }
+
+        function copiarMaiusculas() {
+            const upperElement = document.getElementById('upperInput');
+            if(upperElement.value) {
+                navigator.clipboard.writeText(upperElement.value).then(() => {
+                    alert('Texto em maiúsculas copiado!');
+                });
+            } else {
+                alert('Nada para copiar!');
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -44,6 +44,10 @@
             margin: 5px;
             transition: background-color 0.3s;
         }
+        button:disabled {
+            background-color: #5a6268;
+            cursor: not-allowed;
+        }
         hr { border: 0; height: 1px; margin: 40px 0; transition: background-color 0.3s; }
         #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; }
         .light-theme { background-color: #f0f2f5; color: #1c1e21; }
@@ -52,8 +56,6 @@
         .light-theme hr { background-color: #dddfe2; }
         .light-theme button { background-color: #1877f2; }
         .light-theme button:hover { background-color: #166fe5; }
-        .light-theme .secondary-button { background-color: #6c757d; }
-        .light-theme .secondary-button:hover { background-color: #5a6268; }
         .light-theme .copy-button { background-color: #42b72a; }
         .light-theme .copy-button:hover { background-color: #36a420; }
         .dark-theme { background-color: #18191a; color: #e4e6eb; }
@@ -62,8 +64,6 @@
         .dark-theme hr { background-color: #3a3b3c; }
         .dark-theme button { background-color: #2374e1; }
         .dark-theme button:hover { background-color: #3982e4; }
-        .dark-theme .secondary-button { background-color: #8a8d91; }
-        .dark-theme .secondary-button:hover { background-color: #9ea2a6; }
         .dark-theme .copy-button { background-color: #3d9c28; }
         .dark-theme .copy-button:hover { background-color: #49b831; }
     </style>
@@ -78,8 +78,7 @@
         <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
         
         <div class="buttons">
-            <button onclick="formatarDados(true)">Formatar COM Assunto</button>
-            <button class="secondary-button" onclick="formatarDados(false)">Formatar SEM Assunto</button>
+            <button id="format-button" onclick="formatarDados()">Formatar com Resumo (API)</button>
         </div>
         
         <label for="output">2. Resultado Formatado:</label>
@@ -89,18 +88,7 @@
             <button class="copy-button" onclick="copiarResultado()">Copiar Resultado</button>
         </div>
     </div>
-
-    <hr>
-
-    <div class="container">
-        <h2>Conversor para Maiúsculas</h2>
-        <textarea id="upperInput" placeholder="Cole o texto que deseja converter para maiúsculas..."></textarea>
-        <div class="buttons">
-            <button onclick="converterParaMaiusculas()">Converter para Maiúsculas</button>
-            <button class="copy-button" onclick="copiarResultadoMaiusculas()">Copiar Resultado</button>
-        </div>
-    </div>
-
+    
     <script>
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-theme');
@@ -112,37 +100,66 @@
             document.body.className = savedTheme;
         })();
 
-        function formatarDados(incluirAssunto) {
-            const inputText = document.getElementById('csvInput').value;
-            const lines = inputText.split('\n');
-            let formattedBlocks = [];
+        async function obterResumo(mensagem) {
+            const urlDoAppScript = 'https://script.google.com/macros/s/AKfycbzRJbbP0IAHJHKanX6LnaT_oNBYTHVwSn2HNx849WH_rluL1LUptMrnvTfrCxoulOBOAQ/exec'; 
+            try {
+                const response = await fetch(urlDoAppScript, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+                    body: JSON.stringify({ texto: mensagem })
+                });
+                const data = await response.json();
+                if (data.erro) { throw new Error(data.erro); }
+                return data.resumo || "Não foi possível resumir";
+            } catch (error) {
+                console.error("Erro na chamada do App Script:", error);
+                return "ERRO DE CONEXÃO COM API";
+            }
+        }
 
-            // Novos índices de coluna baseados no seu último exemplo
-            const COL_CLIENTE = 6, COL_ASSUNTO = 7, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
+        async function formatarDados() {
+            const formatButton = document.getElementById('format-button');
+            const outputElement = document.getElementById('output');
+            formatButton.disabled = true;
+            formatButton.textContent = 'Processando...';
+            outputElement.value = 'Aguarde, resumindo os textos com a API... (Isso pode levar alguns segundos)';
+
+            const inputText = document.getElementById('csvInput').value.trim();
+            const lines = inputText.split(/(?=\d{6};)/); 
+            let allBlocks = [];
+
+            const COL_CLIENTE = 6, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
 
             for (const line of lines) {
-                if (line.trim() === '' || line.toLowerCase().startsWith('id;tipo;sla')) continue;
+                if (line.trim() === '') continue;
+                
                 const columns = line.split(';');
                 if (columns.length > COL_WHATSAPP) {
                     const cleanField = (text) => text ? text.trim().replace(/^"|"$/g, '') : '';
-                    
                     const cliente = cleanField(columns[COL_CLIENTE]);
                     const bairro = cleanField(columns[COL_BAIRRO]);
                     const whatsapp = cleanField(columns[COL_WHATSAPP]);
-                    const assuntoFinal = incluirAssunto ? cleanField(columns[COL_ASSUNTO]) : 'assunto';
-                    const mensagem = cleanField(columns[COL_MENSAGEM]).substring(0, 200);
+                    const mensagemOriginal = cleanField(columns[COL_MENSAGEM]);
                     
-                    const dataLine = `${cliente} - ${bairro} - ${assuntoFinal} - ${whatsapp} - D1`;
+                    const assuntoResumido = await obterResumo(mensagemOriginal);
                     
-                    // Adiciona a linha de dados e a mensagem ao bloco
-                    let block = dataLine + '\n' + mensagem;
-                    formattedBlocks.push(block);
+                    const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
+                    
+                    // *** ALTERAÇÃO AQUI: Removemos o limite de 200 caracteres ***
+                    const mensagemCompleta = mensagemOriginal;
+                    
+                    let block = dataLine + '\n' + mensagemCompleta;
+                    allBlocks.push(block);
                 }
             }
-            // Junta os blocos com uma linha em branco entre eles
-            document.getElementById('output').value = formattedBlocks.join('\n\n');
+            
+            outputElement.value = allBlocks.join('\n\n');
+            formatButton.disabled = false;
+            formatButton.textContent = 'Formatar com Resumo (API)';
         }
-
+        
         function copiarResultado() {
             const outputElement = document.getElementById('output');
             if(outputElement.value) {
@@ -151,21 +168,6 @@
                 alert('Nada para copiar!');
             }
         }
-
-        function converterParaMaiusculas() {
-            const inputElement = document.getElementById('upperInput');
-            inputElement.value = inputElement.value.toUpperCase();
-        }
-
-        function copiarResultadoMaiusculas() {
-            const upperElement = document.getElementById('upperInput');
-            if(upperElement.value) {
-                navigator.clipboard.writeText(upperElement.value).then(() => alert('Texto em maiúsculas copiado!'));
-            } else {
-                alert('Nada para copiar!');
-            }
-        }
     </script>
-
 </body>
 </html>

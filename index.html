@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferramentas de Texto</title>
     <style>
-        /* Estilos Gerais */
         body {
             font-family: sans-serif;
             margin: 0;
@@ -13,6 +12,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
         .container {
+            background-color: white;
             padding: 30px;
             border-radius: 8px;
             width: 80%;
@@ -21,17 +21,18 @@
             transition: background-color 0.3s, box-shadow 0.3s;
         }
         h1, h2, p { text-align: center; }
-        textarea {
+        label { font-weight: bold; margin-top: 15px; display: block; }
+        textarea, input[type="text"] {
             width: 98%;
-            min-height: 150px;
             padding: 10px;
-            margin-top: 10px;
+            margin-top: 5px;
             border: 1px solid;
             border-radius: 6px;
             font-size: 14px;
             resize: vertical;
             transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
+        textarea { min-height: 120px; }
         .buttons { text-align: center; margin-top: 20px; }
         button {
             color: white;
@@ -46,27 +47,12 @@
         hr { border: 0; height: 1px; margin: 40px 0; transition: background-color 0.3s; }
 
         /* Estilos do Botão de Tema */
-        #theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
+        #theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; }
 
         /* Tema Claro (Padrão) */
-        .light-theme {
-            background-color: #f0f2f5;
-            color: #1c1e21;
-        }
-        .light-theme .container {
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-        .light-theme textarea {
-            background-color: #ffffff;
-            color: #1c1e21;
-            border-color: #dddfe2;
-        }
+        .light-theme { background-color: #f0f2f5; color: #1c1e21; }
+        .light-theme .container { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1); }
+        .light-theme textarea, .light-theme input[type="text"] { background-color: #ffffff; color: #1c1e21; border-color: #dddfe2; }
         .light-theme hr { background-color: #dddfe2; }
         .light-theme button { background-color: #1877f2; }
         .light-theme button:hover { background-color: #166fe5; }
@@ -76,19 +62,9 @@
         .light-theme .copy-button:hover { background-color: #36a420; }
 
         /* Tema Escuro */
-        .dark-theme {
-            background-color: #18191a;
-            color: #e4e6eb;
-        }
-        .dark-theme .container {
-            background-color: #242526;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.3);
-        }
-        .dark-theme textarea {
-            background-color: #3a3b3c;
-            color: #e4e6eb;
-            border-color: #4e4f50;
-        }
+        .dark-theme { background-color: #18191a; color: #e4e6eb; }
+        .dark-theme .container { background-color: #242526; box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 8px 16px rgba(0,0,0,0.3); }
+        .dark-theme textarea, .dark-theme input[type="text"] { background-color: #3a3b3c; color: #e4e6eb; border-color: #4e4f50; }
         .dark-theme hr { background-color: #3a3b3c; }
         .dark-theme button { background-color: #2374e1; }
         .dark-theme button:hover { background-color: #3982e4; }
@@ -104,15 +80,23 @@
 
     <div class="container">
         <h1>Formatador de Relatórios CSV</h1>
-        <p>Copie os dados do seu CSV e cole no campo abaixo para formatar.</p>
-        <textarea id="csvInput" placeholder="Cole o conteúdo do seu CSV aqui..."></textarea>
+        
+        <label for="csvInput">1. Cole o conteúdo do seu CSV aqui:</label>
+        <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
+        
+        <label for="customMessage">2. Mensagem Personalizada (Opcional):</label>
+        <textarea id="customMessage" placeholder="Digite a mensagem que aparecerá abaixo de cada registro..." style="min-height: 40px;"></textarea>
+
         <div class="buttons">
             <button onclick="formatarDados(true)">Formatar COM Assunto</button>
             <button class="secondary-button" onclick="formatarDados(false)">Formatar SEM Assunto</button>
         </div>
+        
+        <label for="output">3. Resultado Formatado:</label>
         <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
+
         <div class="buttons">
-            <button class="copy-button" onclick="copiarCsv()">Copiar Resultado CSV</button>
+            <button class="copy-button" onclick="copiarCsv()">Copiar Resultado</button>
         </div>
     </div>
 
@@ -131,29 +115,19 @@
     <script>
         // --- LÓGICA DO TEMA ---
         function toggleTheme() {
-            const body = document.body;
-            const isDark = body.classList.contains('dark-theme');
-            if (isDark) {
-                body.classList.remove('dark-theme');
-                body.classList.add('light-theme');
-                localStorage.setItem('theme', 'light-theme');
-            } else {
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                localStorage.setItem('theme', 'dark-theme');
-            }
+            const isDark = document.body.classList.toggle('dark-theme');
+            document.body.classList.toggle('light-theme', !isDark);
+            localStorage.setItem('theme', isDark ? 'dark-theme' : 'light-theme');
         }
-
-        // Aplica o tema salvo quando a página carrega
         (function () {
             const savedTheme = localStorage.getItem('theme') || 'light-theme';
             document.body.className = savedTheme;
         })();
 
-
         // --- FUNÇÕES DO FORMATADOR CSV ---
         function formatarDados(incluirAssunto) {
             const inputText = document.getElementById('csvInput').value;
+            const customMessage = document.getElementById('customMessage').value;
             const lines = inputText.split('\n');
             let formattedLines = [];
             const COL_CLIENTE = 6, COL_ASSUNTO = 7, COL_BAIRRO = 11, COL_WHATSAPP = 13;
@@ -166,10 +140,23 @@
                     const bairro = cleanField(columns[COL_BAIRRO]);
                     const whatsapp = cleanField(columns[COL_WHATSAPP]);
                     const assuntoFinal = incluirAssunto ? cleanField(columns[COL_ASSUNTO]) : 'assunto';
+                    
                     const formattedLine = `${cliente} - ${bairro} - ${assuntoFinal} - ${whatsapp} - D1`;
                     formattedLines.push(formattedLine);
+
+                    if (customMessage.trim() !== '') {
+                        formattedLines.push(customMessage);
+                    }
+                    
+                    // Adiciona a linha em branco para separar os blocos
+                    formattedLines.push(''); 
                 }
             }
+            // Remove a última linha em branco extra
+            if(formattedLines.length > 0) {
+                formattedLines.pop();
+            }
+
             document.getElementById('output').value = formattedLines.join('\n');
         }
 

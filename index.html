@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferramentas de Texto</title>
+    <title>Ferramenta de Formatação</title>
     <style>
         body {
             font-family: sans-serif;
@@ -101,23 +101,19 @@
         })();
 
         async function obterResumo(mensagem) {
-            const urlDoAppScript = 'https://script.google.com/macros/s/AKfycbzRJbbP0IAHJHKanX6LnaT_oNBYTHVwSn2HNx849WH_rluL1LUptMrnvTfrCxoulOBOAQ/exec'; 
+            const urlDoServidor = 'http://localhost:5000/resumir'; 
             try {
-                // *** CÓDIGO DE COMUNICAÇÃO CORRIGIDO ***
-                const response = await fetch(urlDoAppScript, {
+                const response = await fetch(urlDoServidor, {
                     method: 'POST',
-                    redirect: 'follow', // Adicionado para maior compatibilidade
-                    body: JSON.stringify({ texto: mensagem }),
-                    headers: {
-                        "Content-Type": "text/plain;charset=utf-8", // Necessário para Apps Script
-                    }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: mensagem })
                 });
+                if (!response.ok) return `Erro no servidor: ${response.statusText}`;
                 const data = await response.json();
-                if (data.erro) { throw new Error(data.erro); }
-                return data.resumo || "Não foi possível resumir";
+                return data.resumo || "Resumo não disponível";
             } catch (error) {
-                console.error("Erro na chamada do App Script:", error);
-                return "ERRO DE CONEXÃO COM API";
+                console.error("Erro ao conectar com o servidor local:", error);
+                return "ERRO: Servidor local não encontrado";
             }
         }
 
@@ -126,7 +122,7 @@
             const outputElement = document.getElementById('output');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde, resumindo os textos com a API... (Isso pode levar alguns segundos)';
+            outputElement.value = 'Aguarde, contactando o servidor local para resumir os textos...';
 
             const inputText = document.getElementById('csvInput').value.trim();
             const lines = inputText.split(/(?=\d{6};)/); 
@@ -135,7 +131,7 @@
             const COL_CLIENTE = 6, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
 
             for (const line of lines) {
-                if (line.trim() === '') continue;
+                if (line.trim() === '' || line.toLowerCase().startsWith('id;tipo;sla')) continue;
                 
                 const columns = line.split(';');
                 if (columns.length > COL_WHATSAPP) {
@@ -148,10 +144,8 @@
                     const assuntoResumido = await obterResumo(mensagemOriginal);
                     
                     const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
-                    const mensagemCompleta = mensagemOriginal;
                     
-                    let block = dataLine + '\n' + mensagemCompleta;
-                    allBlocks.push(block);
+                    allBlocks.push(dataLine + '\n' + mensagemOriginal);
                 }
             }
             
@@ -162,11 +156,7 @@
         
         function copiarResultado() {
             const outputElement = document.getElementById('output');
-            if(outputElement.value) {
-                navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado copiado!'));
-            } else {
-                alert('Nada para copiar!');
-            }
+            navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado copiado!'));
         }
     </script>
 </body>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ferramenta de Formatação Final</title>
-    <style>body{font-family:sans-serif;margin:0;padding:20px;transition:background-color .3s,color .3s}.container{background-color:#fff;padding:30px;border-radius:8px;width:80%;max-width:900px;margin:20px auto;transition:background-color .3s,box-shadow .3s}h1,h2,p{text-align:center}label{font-weight:700;margin-top:15px;display:block}textarea{width:98%;min-height:150px;padding:10px;margin-top:5px;border:1px solid;border-radius:6px;font-size:14px;resize:vertical;transition:background-color .3s,color .3s,border-color .3s}.buttons{text-align:center;margin-top:20px}button{color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:16px;cursor:pointer;margin:5px;transition:background-color .3s}button:disabled{background-color:#5a6268;cursor:not-allowed}hr{border:0;height:1px;margin:40px 0;transition:background-color .3s}#theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}.light-theme{background-color:#f0f2f5;color:#1c1e21}.light-theme .container{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.1)}.light-theme textarea{background-color:#fff;color:#1c1e21;border-color:#dddfe2}.light-theme hr{background-color:#dddfe2}.light-theme button{background-color:#1877f2}.light-theme button:hover{background-color:#166fe5}.light-theme .copy-button{background-color:#42b72a}.light-theme .copy-button:hover{background-color:#36a420}.dark-theme{background-color:#18191a;color:#e4e6eb}.dark-theme .container{background-color:#242526;box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 16px rgba(0,0,0,.3)}.dark-theme textarea{background-color:#3a3b3c;color:#e4e6eb;border-color:#4e4f50}.dark-theme hr{background-color:#3a3b3c}.dark-theme button{background-color:#2374e1}.dark-theme button:hover{background-color:#3982e4}.dark-theme .copy-button{background-color:#3d9c28}.dark-theme .copy-button:hover{background-color:#49b831}</style>
+    <style>body{font-family:sans-serif;margin:0;padding:20px;transition:background-color .3s,color .3s}.container{background-color:#fff;padding:30px;border-radius:8px;width:80%;max-width:900px;margin:20px auto;transition:background-color .3s,box-shadow .3s}h1,h2,p{text-align:center}label{font-weight:700;margin-top:15px;display:block}.textarea-group, .option-group{margin-top: 10px;}.textarea-group textarea{width:98%;min-height:150px;padding:10px;margin-top:5px;border:1px solid;border-radius:6px;font-size:14px;resize:vertical;transition:background-color .3s,color .3s,border-color .3s}.buttons{text-align:center;margin-top:20px}button{color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:16px;cursor:pointer;margin:5px;transition:background-color .3s}button:disabled{background-color:#5a6268;cursor:not-allowed}hr{border:0;height:1px;margin:40px 0;transition:background-color .3s}#theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}.option-group{text-align:center;margin:20px 0;padding:10px;border:1px solid #dddfe2;border-radius:6px;}.option-group label{display:inline-block;margin:0 10px 0 0;font-weight:400}.option-group input{margin-right:5px}.dark-theme .option-group{border-color:#4e4f50}.light-theme{background-color:#f0f2f5;color:#1c1e21}.light-theme .container{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.1)}.light-theme textarea{background-color:#fff;color:#1c1e21;border-color:#dddfe2}.light-theme hr{background-color:#dddfe2}.light-theme button{background-color:#1877f2}.light-theme button:hover{background-color:#166fe5}.light-theme .copy-button{background-color:#42b72a}.light-theme .copy-button:hover{background-color:#36a420}.dark-theme{background-color:#18191a;color:#e4e6eb}.dark-theme .container{background-color:#242526;box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 16px rgba(0,0,0,.3)}.dark-theme textarea{background-color:#3a3b3c;color:#e4e6eb;border-color:#4e4f50}.dark-theme hr{background-color:#3a3b3c}.dark-theme button{background-color:#2374e1}.dark-theme button:hover{background-color:#3982e4}.dark-theme .copy-button{background-color:#3d9c28}.dark-theme .copy-button:hover{background-color:#49b831}</style>
 </head>
 <body class="light-theme">
 
@@ -12,15 +12,27 @@
 
     <div class="container">
         <h1>Formatador de Relatórios CSV</h1>
-        <label for="csvInput">1. Cole o conteúdo do seu CSV aqui:</label>
-        <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
-        
-        <div class="buttons">
-            <button id="format-button" onclick="formatarDados()">Formatar com Resumo (API)</button>
+        <div class="textarea-group">
+            <label for="csvInput">1. Cole o conteúdo do seu CSV aqui:</label>
+            <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
+        </div>
+
+        <div class="option-group">
+          <label>2. Selecione a Base:</label>
+          <input type="radio" id="d1" name="base_d" value="D1" checked>
+          <label for="d1">D1</label>
+          <input type="radio" id="d2" name="base_d" value="D2">
+          <label for="d2">D2</label>
         </div>
         
-        <label for="output">2. Resultado Formatado:</label>
-        <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
+        <div class="buttons">
+            <button id="format-button" onclick="formatarDados()">3. Formatar com Resumo (API)</button>
+        </div>
+        
+        <div class="textarea-group">
+            <label for="output">4. Resultado Formatado:</label>
+            <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
+        </div>
 
         <div class="buttons">
             <button class="copy-button" onclick="copiarResultado()">Copiar Resultado</button>
@@ -61,6 +73,7 @@
             formatButton.textContent = 'Processando...';
             outputElement.value = 'Aguarde, resumindo os textos...';
 
+            const baseSelecionada = document.querySelector('input[name="base_d"]:checked').value;
             const inputText = document.getElementById('csvInput').value.trim();
             const lines = inputText.split(/(?=\d{6};)/); 
             let allFormattedLines = [];
@@ -84,8 +97,7 @@
                     
                     const assuntoResumido = await obterResumo(mensagemOriginal);
                     
-                    // *** ALTERAÇÃO AQUI: Monta apenas a linha de resumo ***
-                    const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
+                    const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - ${baseSelecionada}`;
                     allFormattedLines.push(dataLine);
 
                     if (i < lines.length - 1) { 
@@ -94,8 +106,7 @@
                 }
             }
             
-            // Junta as linhas com uma quebra de linha simples
-            outputElement.value = allFormattedLines.join('\n'); 
+            outputElement.value = allFormattedLines.join('\n');
             formatButton.disabled = false;
             formatButton.textContent = 'Formatar com Resumo (API)';
         }

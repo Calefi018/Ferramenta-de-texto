@@ -38,9 +38,6 @@
             document.body.className = savedTheme;
         })();
 
-        // Função para criar uma pausa
-        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
         async function obterResumo(mensagem) {
             const urlDoServidor = 'http://localhost:5000/resumir'; 
             try {
@@ -62,12 +59,13 @@
             const outputElement = document.getElementById('output');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Iniciando... (Respeitando o limite de 15 pedidos/minuto)';
+            outputElement.value = 'Aguarde, resumindo os textos... (Respeitando o limite de 15 pedidos/minuto)';
 
             const inputText = document.getElementById('csvInput').value.trim();
             const lines = inputText.split(/(?=\d{6};)/); 
-            let allBlocks = [];
+            let allFormattedLines = [];
 
+            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
             const COL_CLIENTE = 6, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
 
             for (let i = 0; i < lines.length; i++) {
@@ -86,18 +84,17 @@
                     
                     const assuntoResumido = await obterResumo(mensagemOriginal);
                     
+                    // *** ALTERAÇÃO AQUI: Monta apenas a linha única ***
                     const dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - D1`;
-                    allBlocks.push(dataLine + '\n' + mensagemOriginal);
+                    allFormattedLines.push(dataLine);
 
-                    // *** ALTERAÇÃO PRINCIPAL AQUI ***
-                    // Pausa de 4 segundos para não exceder o limite da API (15/minuto)
-                    if (i < lines.length - 1) { // Não pausa depois do último item
+                    if (i < lines.length - 1) { 
                         await sleep(4000);
                     }
                 }
             }
             
-            outputElement.value = allBlocks.join('\n\n');
+            outputElement.value = allFormattedLines.join('\n'); // Junta com uma quebra de linha simples
             formatButton.disabled = false;
             formatButton.textContent = 'Formatar com Resumo (API)';
         }

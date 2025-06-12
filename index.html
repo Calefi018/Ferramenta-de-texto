@@ -69,7 +69,7 @@
             btn.disabled = true; btn.textContent = 'Processando...';
 
             const inputText = document.getElementById('csvInputExterno').value.trim();
-            const records = inputText.match(/\d{6};.*/g) || []; // Encontra todas as linhas que começam com ID de 6 dígitos
+            const records = inputText.match(/\d{6};.*/g) || [];
 
             if (records.length === 0) { alert("Nenhum dado de Suporte Externo válido encontrado."); btn.disabled = false; btn.textContent = 'Formatar Suporte'; return; }
             
@@ -81,7 +81,7 @@
                 const columns = records[i].split(';');
                 if (columns.length > COL.whatsapp) {
                     const assunto = await callApi(`${RENDER_URL}/resumir`, cleanField(columns[COL.mensagem]));
-                    const dataLine = `${cleanField(columns[COL.cliente])} - ${cleanField(columns[COL.bairro])} - ${assunto} - ${cleanField(columns[COL.whatsapp])} - D1`; // Adicionado D1 como padrão
+                    const dataLine = `${cleanField(columns[COL.cliente])} - ${cleanField(columns[COL.bairro])} - ${assunto} - ${cleanField(columns[COL.whatsapp])} - D1`;
                     allFormattedLines.push(dataLine);
                     if (i < records.length - 1) await sleep(4000);
                 }
@@ -97,9 +97,10 @@
             btn.disabled = true; btn.textContent = 'Processando...';
 
             const inputText = document.getElementById('csvInputRetiradas').value.trim();
-            const records = inputText.match(/"\d{2}\/\d{2}\/\d{4}.*/g) || []; // Encontra todas as linhas que começam com data entre aspas
+            // *** CORREÇÃO AQUI: A aspa inicial (") agora é opcional ***
+            const records = inputText.match(/"?\d{2}\/\d{2}\/\d{4}.*/g) || []; 
             
-            if (records.length === 0) { alert("Nenhum dado de Retirada válido encontrado."); btn.disabled = false; btn.textContent = 'Formatar Retiradas'; return; }
+            if (records.length === 0) { alert("Nenhum dado de Retirada válido encontrado. Verifique se os dados começam com uma data (dd/mm/aaaa)."); btn.disabled = false; btn.textContent = 'Formatar Retiradas'; return; }
 
             let allFormattedLines = [];
             const COL = { cliente: 2, mensagem: 6, bairro: 7, whatsapp: 9 };
@@ -107,7 +108,7 @@
             for (let i = 0; i < records.length; i++) {
                 output.value = `Processando Retirada ${i + 1} de ${records.length}...`;
                 const columns = records[i].split(';');
-                if (columns.length > COL.whatsapp) {
+                 if (columns.length > COL.whatsapp) {
                     const periodo = await callApi(`${RENDER_URL}/extrair-retirada`, cleanField(columns[COL.mensagem]));
                     const dataLine = `${cleanField(columns[COL.cliente])} - ${cleanField(columns[COL.bairro])} - cancelamento - ${periodo} - ${cleanField(columns[COL.whatsapp])}`;
                     allFormattedLines.push(dataLine);

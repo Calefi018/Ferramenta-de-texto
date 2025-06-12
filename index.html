@@ -38,6 +38,7 @@
     
     <script>
         // --- LÓGICA GERAL ---
+        const RENDER_URL = 'https://render-server-blgr.onrender.com'; // URL base centralizada
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
         function cleanField(text) { return text ? text.trim().replace(/^"|"$/g, '') : ''; }
         function toggleTheme() {
@@ -54,13 +55,29 @@
             navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado copiado!'));
         }
 
+        // Função Genérica para chamar a API
+        async function callApi(url, textPayload) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ texto: textPayload })
+                });
+                if (!response.ok) return `Erro no servidor: ${response.statusText}`;
+                const data = await response.json();
+                return data.resumo || data.periodo_contato || "Resposta da API vazia";
+            } catch (error) {
+                return "ERRO DE CONEXÃO";
+            }
+        }
+
         // --- LÓGICA DA FERRAMENTA 1: SUPORTE EXTERNO ---
         async function formatarSuporteExterno() {
             const formatButton = document.getElementById('format-button-externo');
             const outputElement = document.getElementById('outputExterno');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde, resumindo os textos...';
+            outputElement.value = 'Aguarde...';
 
             const inputText = document.getElementById('csvInputExterno').value.trim();
             const lines = inputText.split(/(?=\d{6};)/);
@@ -73,7 +90,7 @@
                 outputElement.value = `Processando Suporte ${i + 1} de ${lines.length}...`;
                 const columns = lines[i].split(';');
                 if (columns.length > COL_WHATSAPP) {
-                    const assuntoResumido = await callApi('http://localhost:5000/resumir', cleanField(columns[COL_MENSAGEM]));
+                    const assuntoResumido = await callApi(`${RENDER_URL}/resumir`, cleanField(columns[COL_MENSAGEM]));
                     const dataLine = `${cleanField(columns[COL_CLIENTE])} - ${cleanField(columns[COL_BAIRRO])} - ${assuntoResumido} - ${cleanField(columns[COL_WHATSAPP])} - D1`;
                     allFormattedLines.push(dataLine);
                     if (i < lines.length - 1) await sleep(4000);
@@ -90,10 +107,10 @@
             const outputElement = document.getElementById('outputRetiradas');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde, extraindo informações...';
+            outputElement.value = 'Aguarde...';
             
             const inputText = document.getElementById('csvInputRetiradas').value.trim();
-            const lines = inputText.split(/(?=\d{6};|\"\d{2}\/\d{2}\/\d{4})/); // Padrão para ID ou Data
+            const lines = inputText.split(/(?="\d{2}\/\d{2}\/\d{4})/);
             let allFormattedLines = [];
 
             const COL_CLIENTE_R = 2, COL_MENSAGEM_R = 6, COL_BAIRRO_R = 7, COL_WHATSAPP_R = 9;
@@ -103,7 +120,7 @@
                 outputElement.value = `Processando Retirada ${i + 1} de ${lines.length}...`;
                 const columns = lines[i].split(';');
                  if (columns.length > COL_WHATSAPP_R) {
-                    const periodoContato = await callApi('http://localhost:5000/extrair-retirada', cleanField(columns[COL_MENSAGEM_R]));
+                    const periodoContato = await callApi(`${RENDER_URL}/extrair-retirada`, cleanField(columns[COL_MENSAGEM_R]));
                     const dataLine = `${cleanField(columns[COL_CLIENTE_R])} - ${cleanField(columns[COL_BAIRRO_R])} - cancelamento - ${periodoContato} - ${cleanField(columns[COL_WHATSAPP_R])}`;
                     allFormattedLines.push(dataLine);
                     if (i < lines.length - 1) await sleep(4000);
@@ -112,22 +129,6 @@
             outputElement.value = allFormattedLines.join('\n');
             formatButton.disabled = false;
             formatButton.textContent = 'Formatar Retiradas';
-        }
-
-        // Função Genérica para chamar a API
-        async function callApi(url, textPayload) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ texto: textPayload })
-                });
-                if (!response.ok) return `Erro no servidor: ${response.statusText}`;
-                const data = await response.json();
-                return data.resumo || data.periodo_contato || "Resposta da API vazia";
-            } catch (error) {
-                return "ERRO DE CONEXÃO";
-            }
         }
     </script>
 </body>

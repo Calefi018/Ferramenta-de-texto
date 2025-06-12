@@ -48,10 +48,6 @@
     </div>
     
     <script>
-        // --- LÓGICA GERAL ---
-        const RENDER_URL = 'https://render-server-blgr.onrender.com';
-        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-        function cleanField(text) { return text ? text.trim().replace(/^"|"$/g, '') : ''; }
         function toggleTheme() {
             const isDark = document.body.classList.toggle('dark-theme');
             document.body.classList.toggle('light-theme', !isDark);
@@ -61,10 +57,7 @@
             const savedTheme = localStorage.getItem('theme') || 'light-theme';
             document.body.className = savedTheme;
         })();
-        function copiarResultado(elementId) {
-            navigator.clipboard.writeText(document.getElementById(elementId).value).then(() => alert('Resultado copiado!'));
-        }
-        
+
         async function callApi(url, textPayload) {
             try {
                 const response = await fetch(url, {
@@ -80,7 +73,6 @@
             }
         }
 
-        // --- FUNÇÃO PRINCIPAL E INTELIGENTE ---
         async function formatarDados() {
             const formatButton = document.getElementById('format-button');
             const outputElement = document.getElementById('output');
@@ -90,16 +82,21 @@
             const taskType = document.querySelector('input[name="task_type"]:checked').value;
             const baseSelecionada = document.querySelector('input[name="base_d"]:checked').value;
             const inputText = document.getElementById('csvInput').value.trim();
-            const lines = inputText.split('\n');
             
-            // 1. Encontrar o cabeçalho e mapear as colunas
-            const headerLine = lines.find(line => line.toLowerCase().includes('cliente'));
-            if (!headerLine) {
-                alert('Erro: Cabeçalho não encontrado no CSV.');
+            // *** MUDANÇA PRINCIPAL AQUI: LÓGICA DE DETECÇÃO DE LINHA ***
+            // Procura por um padrão que inicia uma nova linha: um ID de 6 dígitos ou uma data entre aspas.
+            const lines = inputText.split(/(?=\d{6};|"\d{2}\/\d{2}\/\d{4})/g).filter(line => line.trim() !== '');
+
+            if (lines.length === 0) {
+                alert("Nenhum dado válido encontrado. Verifique o texto colado.");
                 formatButton.disabled = false;
                 formatButton.textContent = 'Formatar Dados';
                 return;
             }
+
+            let allFormattedLines = [];
+            
+            const headerLine = lines[0].toLowerCase().includes('cliente') ? lines.shift() : ';;cliente;;;;mensagem;bairro;;whatsapp';
             const headers = headerLine.split(';').map(h => cleanField(h.toLowerCase()));
             const headerMap = {
                 cliente: headers.indexOf('cliente'),
@@ -108,15 +105,12 @@
                 whatsapp: headers.indexOf('whatsapp')
             };
 
-            let allFormattedLines = [];
+            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
             for (let i = 0; i < lines.length; i++) {
-                if (i === 0 || lines[i].trim() === '') continue; // Pula cabeçalho e linhas vazias
-                
                 outputElement.value = `Processando linha ${i + 1} de ${lines.length}...`;
                 const columns = lines[i].split(';');
-
-                // Extração e Validação
+                
                 const cliente = headerMap.cliente !== -1 ? cleanField(columns[headerMap.cliente]) : '';
                 const bairro = headerMap.bairro !== -1 ? cleanField(columns[headerMap.bairro]) : '';
                 const mensagem = headerMap.mensagem !== -1 ? cleanField(columns[headerMap.mensagem]) : '';
@@ -132,6 +126,7 @@
                     const erroMsg = `ERRO: DADOS FALTANDO (${missingInfo.join(', ')})`;
                     dataLine = `${cliente || '[FALHA]'} - ${bairro || '[FALHA]'} - ${erroMsg} - ${whatsapp || '[FALHA]'} - ${baseSelecionada}`;
                 } else {
+                    const RENDER_URL = 'https://render-server-blgr.onrender.com';
                     if (taskType === 'resumir') {
                         const assuntoResumido = await callApi(`${RENDER_URL}/resumir`, mensagem);
                         dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - ${baseSelecionada}`;
@@ -148,6 +143,11 @@
             outputElement.value = allFormattedLines.join('\n');
             formatButton.disabled = false;
             formatButton.textContent = 'Formatar Dados';
+        }
+
+        function cleanField(text) { return text ? text.trim().replace(/^"|"$/g, '') : ''; }
+        function copiarResultado(elementId) {
+            navigator.clipboard.writeText(document.getElementById(elementId).value).then(() => alert('Resultado copiado!'));
         }
     </script>
 </body>

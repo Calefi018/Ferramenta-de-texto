@@ -1,0 +1,91 @@
+/* --- GERAL --- */
+:root {
+    --sidebar-width-expanded: 250px;
+    --sidebar-width-collapsed: 60px;
+    --transition-speed: 0.3s;
+}
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+}
+* { box-sizing: border-box; }
+
+/* --- ESTRUTURA PRINCIPAL --- */
+#app-wrapper {
+    display: flex;
+}
+#sidebar {
+    width: var(--sidebar-width-expanded);
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #dddfe2;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width var(--transition-speed) ease;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+#main-content {
+    margin-left: var(--sidebar-width-expanded);
+    padding: 20px;
+    width: 100%;
+    transition: margin-left var(--transition-speed) ease;
+}
+
+/* --- ESTILOS DO MENU --- */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #dddfe2;
+}
+.sidebar-header h3 { margin: 0; }
+#sidebar-toggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #1c1e21;
+}
+.tool-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.tool-list a {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    text-decoration: none;
+    color: #1c1e21;
+    transition: background-color var(--transition-speed);
+}
+.tool-list a:hover { background-color: #f0f2f5; }
+.tool-list .icon { font-size: 20px; margin-right: 15px; }
+
+/* --- ESTADO RECOLHIDO DO MENU --- */
+body.sidebar-collapsed #sidebar { width: var(--sidebar-width-collapsed); }
+body.sidebar-collapsed #main-content { margin-left: var(--sidebar-width-collapsed); }
+body.sidebar-collapsed .sidebar-header h3,
+body.sidebar-collapsed .tool-list .text {
+    display: none;
+}
+body.sidebar-collapsed .sidebar-header { justify-content: center; }
+
+
+/* --- ESTILOS DAS FERRAMENTAS --- */
+.tool-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+h1, h2, p { text-align: center; }
+textarea { width: 100%; min-height: 150px; padding: 10px; margin-top: 10px; border: 1px solid #dddfe2; border-radius: 6px; }
+.buttons { text-align: center; margin-top: 20px; }
+button { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; }
+.copy-button { background-color: #42b72a; color: white; }

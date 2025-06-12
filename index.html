@@ -3,42 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferramentas de Formatação</title>
-    <style>body{font-family:sans-serif;margin:0;padding:20px;transition:background-color .3s,color .3s}.container{background-color:#fff;padding:30px;border-radius:8px;width:80%;max-width:900px;margin:20px auto;transition:background-color .3s,box-shadow .3s}h1,h2,p{text-align:center}label{font-weight:700;margin-top:15px;display:block}textarea{width:98%;min-height:150px;padding:10px;margin-top:5px;border:1px solid;border-radius:6px;font-size:14px;resize:vertical;transition:background-color .3s,color .3s,border-color .3s}.buttons{text-align:center;margin-top:20px}button{color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:16px;cursor:pointer;margin:5px;transition:background-color .3s}button:disabled{background-color:#5a6268;cursor:not-allowed}hr{border:0;height:1px;margin:40px 0;transition:background-color .3s}#theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}.light-theme{background-color:#f0f2f5;color:#1c1e21}.light-theme .container{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.1)}.light-theme textarea{background-color:#fff;color:#1c1e21;border-color:#dddfe2}.light-theme hr{background-color:#dddfe2}.light-theme button{background-color:#1877f2}.light-theme button:hover{background-color:#166fe5}.light-theme .copy-button{background-color:#42b72a}.light-theme .copy-button:hover{background-color:#36a420}.dark-theme{background-color:#18191a;color:#e4e6eb}.dark-theme .container{background-color:#242526;box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 16px rgba(0,0,0,.3)}.dark-theme textarea{background-color:#3a3b3c;color:#e4e6eb;border-color:#4e4f50}.dark-theme hr{background-color:#3a3b3c}.dark-theme button{background-color:#2374e1}.dark-theme button:hover{background-color:#3982e4}.dark-theme .copy-button{background-color:#3d9c28}.dark-theme .copy-button:hover{background-color:#49b831}</style>
+    <title>Ferramenta de Formatação Inteligente</title>
+    <style>body{font-family:sans-serif;margin:0;padding:20px;transition:background-color .3s,color .3s}.container{background-color:#fff;padding:30px;border-radius:8px;width:80%;max-width:900px;margin:20px auto;transition:background-color .3s,box-shadow .3s}h1,h2,p{text-align:center}label{font-weight:700;margin-top:15px;display:block}textarea{width:98%;min-height:150px;padding:10px;margin-top:5px;border:1px solid;border-radius:6px;font-size:14px;resize:vertical;transition:background-color .3s,color .3s,border-color .3s}.buttons{text-align:center;margin-top:20px}button{color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:16px;cursor:pointer;margin:5px;transition:background-color .3s}button:disabled{background-color:#5a6268;cursor:not-allowed}hr{border:0;height:1px;margin:40px 0;transition:background-color .3s}#theme-toggle{position:fixed;top:20px;right:20px;z-index:1000}.option-group{text-align:center;margin:20px 0;padding:10px;border:1px solid;border-radius:6px;transition: border-color 0.3s;}.option-group label{display:inline-block;margin:0 10px 0 0;font-weight:400}.option-group input{margin-right:5px}.input-group{margin-top:10px}.light-theme{background-color:#f0f2f5;color:#1c1e21}.light-theme .container{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1),0 8px 16px rgba(0,0,0,.1)}.light-theme textarea{background-color:#fff;color:#1c1e21;border-color:#dddfe2}.light-theme .option-group{border-color:#dddfe2}.light-theme hr{background-color:#dddfe2}.light-theme button{background-color:#1877f2}.light-theme button:hover{background-color:#166fe5}.light-theme .copy-button{background-color:#42b72a}.light-theme .copy-button:hover{background-color:#36a420}.dark-theme{background-color:#18191a;color:#e4e6eb}.dark-theme .container{background-color:#242526;box-shadow:0 2px 4px rgba(0,0,0,.3),0 8px 16px rgba(0,0,0,.3)}.dark-theme textarea{background-color:#3a3b3c;color:#e4e6eb;border-color:#4e4f50}.dark-theme .option-group{border-color:#4e4f50}.dark-theme hr{background-color:#3a3b3c}.dark-theme button{background-color:#2374e1}.dark-theme button:hover{background-color:#3982e4}.dark-theme .copy-button{background-color:#3d9c28}.dark-theme .copy-button:hover{background-color:#49b831}</style>
 </head>
 <body class="light-theme">
 
     <button id="theme-toggle" onclick="toggleTheme()">Mudar Tema</button>
 
     <div class="container">
-        <h1>Formatador de Chamados (Suporte Externo)</h1>
-        <textarea id="csvInputExterno" placeholder="Cole aqui os dados dos chamados de SUPORTE..."></textarea>
-        <div class="buttons">
-            <button id="format-button-externo" onclick="formatarSuporteExterno()">Formatar Suporte Externo</button>
+        <h1>Formatador Inteligente de Relatórios</h1>
+        <div class="input-group">
+            <label for="csvInput">1. Cole o conteúdo do seu CSV aqui (com cabeçalho):</label>
+            <textarea id="csvInput" placeholder="Cole os dados do CSV aqui..."></textarea>
         </div>
-        <textarea id="outputExterno" readonly placeholder="O resultado formatado do Suporte Externo aparecerá aqui..."></textarea>
-        <div class="buttons">
-            <button class="copy-button" onclick="copiarResultado('outputExterno')">Copiar Resultado</button>
-        </div>
-    </div>
-    
-    <hr>
 
-    <div class="container">
-        <h1>Formatador de Retiradas (Cancelamento)</h1>
-        <textarea id="csvInputRetiradas" placeholder="Cole aqui os dados das RETIRADAS DE CANCELAMENTO..."></textarea>
-        <div class="buttons">
-            <button id="format-button-retiradas" onclick="formatarRetiradas()">Formatar Retiradas</button>
+        <div class="option-group">
+          <label>2. Tipo de Tarefa:</label>
+          <input type="radio" id="task_resumo" name="task_type" value="resumir" checked>
+          <label for="task_resumo">Suporte Externo (Resumo)</label>
+          <input type="radio" id="task_extracao" name="task_type" value="extrair">
+          <label for="task_extracao">Retirada de Cancelamento (Extração)</label>
         </div>
-        <textarea id="outputRetiradas" readonly placeholder="O resultado formatado das Retiradas aparecerá aqui..."></textarea>
+
+        <div class="option-group">
+          <label>3. Base:</label>
+          <input type="radio" id="d1" name="base_d" value="D1" checked>
+          <label for="d1">D1</label>
+          <input type="radio" id="d2" name="base_d" value="D2">
+          <label for="d2">D2</label>
+        </div>
+        
         <div class="buttons">
-            <button class="copy-button" onclick="copiarResultado('outputRetiradas')">Copiar Resultado</button>
+            <button id="format-button" onclick="formatarDados()">4. Formatar Dados</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="output">5. Resultado Formatado:</label>
+            <textarea id="output" readonly placeholder="O resultado formatado aparecerá aqui..."></textarea>
+        </div>
+
+        <div class="buttons">
+            <button class="copy-button" onclick="copiarResultado('output')">Copiar Resultado</button>
         </div>
     </div>
     
     <script>
         // --- LÓGICA GERAL ---
-        const RENDER_URL = 'https://render-server-blgr.onrender.com'; // URL base centralizada
+        const RENDER_URL = 'https://render-server-blgr.onrender.com';
         const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
         function cleanField(text) { return text ? text.trim().replace(/^"|"$/g, '') : ''; }
         function toggleTheme() {
@@ -51,11 +62,9 @@
             document.body.className = savedTheme;
         })();
         function copiarResultado(elementId) {
-            const outputElement = document.getElementById(elementId);
-            navigator.clipboard.writeText(outputElement.value).then(() => alert('Resultado copiado!'));
+            navigator.clipboard.writeText(document.getElementById(elementId).value).then(() => alert('Resultado copiado!'));
         }
-
-        // Função Genérica para chamar a API
+        
         async function callApi(url, textPayload) {
             try {
                 const response = await fetch(url, {
@@ -63,72 +72,82 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ texto: textPayload })
                 });
-                if (!response.ok) return `Erro no servidor: ${response.statusText}`;
+                if (!response.ok) return `Erro no servidor (${response.status})`;
                 const data = await response.json();
-                return data.resumo || data.periodo_contato || "Resposta da API vazia";
+                return data.resumo || data.periodo_contato || "Sem resposta da IA";
             } catch (error) {
                 return "ERRO DE CONEXÃO";
             }
         }
 
-        // --- LÓGICA DA FERRAMENTA 1: SUPORTE EXTERNO ---
-        async function formatarSuporteExterno() {
-            const formatButton = document.getElementById('format-button-externo');
-            const outputElement = document.getElementById('outputExterno');
+        // --- FUNÇÃO PRINCIPAL E INTELIGENTE ---
+        async function formatarDados() {
+            const formatButton = document.getElementById('format-button');
+            const outputElement = document.getElementById('output');
             formatButton.disabled = true;
             formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde...';
-
-            const inputText = document.getElementById('csvInputExterno').value.trim();
-            const lines = inputText.split(/(?=\d{6};)/);
-            let allFormattedLines = [];
-
-            const COL_CLIENTE = 6, COL_MENSAGEM = 11, COL_BAIRRO = 12, COL_WHATSAPP = 14;
-
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].trim() === '') continue;
-                outputElement.value = `Processando Suporte ${i + 1} de ${lines.length}...`;
-                const columns = lines[i].split(';');
-                if (columns.length > COL_WHATSAPP) {
-                    const assuntoResumido = await callApi(`${RENDER_URL}/resumir`, cleanField(columns[COL_MENSAGEM]));
-                    const dataLine = `${cleanField(columns[COL_CLIENTE])} - ${cleanField(columns[COL_BAIRRO])} - ${assuntoResumido} - ${cleanField(columns[COL_WHATSAPP])} - D1`;
-                    allFormattedLines.push(dataLine);
-                    if (i < lines.length - 1) await sleep(4000);
-                }
-            }
-            outputElement.value = allFormattedLines.join('\n');
-            formatButton.disabled = false;
-            formatButton.textContent = 'Formatar Suporte Externo';
-        }
-
-        // --- LÓGICA DA FERRAMENTA 2: RETIRADAS ---
-        async function formatarRetiradas() {
-            const formatButton = document.getElementById('format-button-retiradas');
-            const outputElement = document.getElementById('outputRetiradas');
-            formatButton.disabled = true;
-            formatButton.textContent = 'Processando...';
-            outputElement.value = 'Aguarde...';
             
-            const inputText = document.getElementById('csvInputRetiradas').value.trim();
-            const lines = inputText.split(/(?="\d{2}\/\d{2}\/\d{4})/);
+            const taskType = document.querySelector('input[name="task_type"]:checked').value;
+            const baseSelecionada = document.querySelector('input[name="base_d"]:checked').value;
+            const inputText = document.getElementById('csvInput').value.trim();
+            const lines = inputText.split('\n');
+            
+            // 1. Encontrar o cabeçalho e mapear as colunas
+            const headerLine = lines.find(line => line.toLowerCase().includes('cliente'));
+            if (!headerLine) {
+                alert('Erro: Cabeçalho não encontrado no CSV.');
+                formatButton.disabled = false;
+                formatButton.textContent = 'Formatar Dados';
+                return;
+            }
+            const headers = headerLine.split(';').map(h => cleanField(h.toLowerCase()));
+            const headerMap = {
+                cliente: headers.indexOf('cliente'),
+                bairro: headers.indexOf('bairro'),
+                mensagem: headers.indexOf('mensagem'),
+                whatsapp: headers.indexOf('whatsapp')
+            };
+
             let allFormattedLines = [];
 
-            const COL_CLIENTE_R = 2, COL_MENSAGEM_R = 6, COL_BAIRRO_R = 7, COL_WHATSAPP_R = 9;
-
             for (let i = 0; i < lines.length; i++) {
-                 if (lines[i].trim() === '') continue;
-                outputElement.value = `Processando Retirada ${i + 1} de ${lines.length}...`;
+                if (i === 0 || lines[i].trim() === '') continue; // Pula cabeçalho e linhas vazias
+                
+                outputElement.value = `Processando linha ${i + 1} de ${lines.length}...`;
                 const columns = lines[i].split(';');
-                 if (columns.length > COL_WHATSAPP_R) {
-                    const periodoContato = await callApi(`${RENDER_URL}/extrair-retirada`, cleanField(columns[COL_MENSAGEM_R]));
-                    const dataLine = `${cleanField(columns[COL_CLIENTE_R])} - ${cleanField(columns[COL_BAIRRO_R])} - cancelamento - ${periodoContato} - ${cleanField(columns[COL_WHATSAPP_R])}`;
-                    allFormattedLines.push(dataLine);
-                    if (i < lines.length - 1) await sleep(4000);
+
+                // Extração e Validação
+                const cliente = headerMap.cliente !== -1 ? cleanField(columns[headerMap.cliente]) : '';
+                const bairro = headerMap.bairro !== -1 ? cleanField(columns[headerMap.bairro]) : '';
+                const mensagem = headerMap.mensagem !== -1 ? cleanField(columns[headerMap.mensagem]) : '';
+                const whatsapp = headerMap.whatsapp !== -1 ? cleanField(columns[headerMap.whatsapp]) : '';
+                
+                let missingInfo = [];
+                if (!cliente) missingInfo.push("CLIENTE");
+                if (!bairro) missingInfo.push("BAIRRO");
+                if (!mensagem) missingInfo.push("MENSAGEM");
+
+                let dataLine = '';
+                if (missingInfo.length > 0) {
+                    const erroMsg = `ERRO: DADOS FALTANDO (${missingInfo.join(', ')})`;
+                    dataLine = `${cliente || '[FALHA]'} - ${bairro || '[FALHA]'} - ${erroMsg} - ${whatsapp || '[FALHA]'} - ${baseSelecionada}`;
+                } else {
+                    if (taskType === 'resumir') {
+                        const assuntoResumido = await callApi(`${RENDER_URL}/resumir`, mensagem);
+                        dataLine = `${cliente} - ${bairro} - ${assuntoResumido} - ${whatsapp} - ${baseSelecionada}`;
+                    } else { // taskType === 'extrair'
+                        const periodoContato = await callApi(`${RENDER_URL}/extrair-retirada`, mensagem);
+                        dataLine = `${cliente} - ${bairro} - cancelamento - ${periodoContato} - ${whatsapp}`;
+                    }
                 }
+                
+                allFormattedLines.push(dataLine);
+                if (i < lines.length - 1) await sleep(4000);
             }
+            
             outputElement.value = allFormattedLines.join('\n');
             formatButton.disabled = false;
-            formatButton.textContent = 'Formatar Retiradas';
+            formatButton.textContent = 'Formatar Dados';
         }
     </script>
 </body>

@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Ferramentas</title>
+    <title>Painel de Ferramentas Definitivo</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light-theme">
+
+    <button id="theme-toggle" onclick="toggleTheme()">Mudar Tema</button>
 
     <div id="app-wrapper">
-
         <nav id="sidebar">
             <div class="sidebar-header">
                 <h3>Ferramentas</h3>
@@ -17,37 +18,45 @@
             </div>
             <ul class="tool-list">
                 <li>
-                    <a href="#" onclick="showTool('formatter-tool')">
+                    <a href="#" onclick="showTool('formatter-container')">
                         <span class="icon">📄</span>
                         <span class="text">Formatador CSV</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="showTool('uppercase-tool')">
-                        <span class="icon">🔠</span>
-                        <span class="text">Conversor Maiúsculas</span>
                     </a>
                 </li>
             </ul>
         </nav>
 
         <main id="main-content">
-            <div id="formatter-tool" class="tool-container" style="display:none;">
-                 <h1>Formatador Inteligente de Relatórios</h1>
-                 </div>
-
-            <div id="uppercase-tool" class="tool-container" style="display:none;">
-                <h2>Conversor para Maiúsculas</h2>
-                <textarea id="upperInput" placeholder="Cole o texto que deseja converter..."></textarea>
+            <div id="formatter-container" class="tool-container">
+                <h1>Formatador Inteligente de Relatórios</h1>
+                <label for="csvInput">1. Cole o conteúdo do seu CSV aqui (com cabeçalho):</label>
+                <textarea id="csvInput" placeholder="Cole os dados misturados de Suporte e Retiradas aqui..."></textarea>
+                
                 <div class="buttons">
-                    <button onclick="converterParaMaiusculas()">Converter para Maiúsculas</button>
-                    <button class="copy-button" onclick="copiarResultado('upperInput')">Copiar</button>
+                    <button id="format-button" onclick="formatarDados()">2. Formatar e Separar Dados</button>
                 </div>
-            </div>
 
-            <div id="welcome-message" class="tool-container">
-                <h1>Bem-vindo ao Painel de Ferramentas!</h1>
-                <p>Selecione uma ferramenta no menu à esquerda para começar.</p>
+                <div id="progress-container" style="display: none;">
+                    <p id="progress-text"></p>
+                    <div id="progress-bar-background"><div id="progress-bar-foreground"></div></div>
+                </div>
+                
+                <div class="output-container">
+                    <div class="output-group">
+                        <label for="outputExterno">Resultado (Suporte Externo)</label>
+                        <textarea id="outputExterno" readonly></textarea>
+                        <div class="buttons">
+                            <button class="copy-button" onclick="copiarResultado('outputExterno')">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="output-group">
+                        <label for="outputRetiradas">Resultado (Retiradas)</label>
+                        <textarea id="outputRetiradas" readonly></textarea>
+                         <div class="buttons">
+                            <button class="copy-button" onclick="copiarResultado('outputRetiradas')">Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>

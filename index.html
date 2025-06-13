@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Ferramentas Definitivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+
+    <button id="theme-toggle" onclick="toggleTheme()">Mudar Tema</button>
+
+    <div id="app-wrapper">
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>Ferramentas</h3>
+                <button id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+            </div>
+            <ul class="tool-list">
+                <li>
+                    <a href="#" onclick="showTool('formatter-container')">
+                        <span class="icon">📄</span>
+                        <span class="text">Formatador CSV</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main id="main-content">
+            <div id="formatter-container" class="tool-container">
+                <h1>Formatador Inteligente de Relatórios</h1>
+                <label for="csvInput">1. Cole o conteúdo do seu CSV aqui (com cabeçalho):</label>
+                <textarea id="csvInput" placeholder="Cole os dados misturados de Suporte e Retiradas aqui..."></textarea>
+                
+                <div class="buttons">
+                    <button id="format-button" onclick="formatarDados()">2. Formatar e Separar Dados</button>
+                </div>
+
+                <div id="progress-container" style="display: none;">
+                    <p id="progress-text"></p>
+                    <div id="progress-bar-background"><div id="progress-bar-foreground"></div></div>
+                </div>
+                
+                <div class="output-container">
+                    <div class="output-group">
+                        <label for="outputExterno">Resultado (Suporte Externo)</label>
+                        <textarea id="outputExterno" readonly></textarea>
+                        <div class="buttons">
+                            <button class="copy-button" onclick="copiarResultado('outputExterno')">Copiar</button>
+                        </div>
+                    </div>
+                    <div class="output-group">
+                        <label for="outputRetiradas">Resultado (Retiradas)</label>
+                        <textarea id="outputRetiradas" readonly></textarea>
+                         <div class="buttons">
+                            <button class="copy-button" onclick="copiarResultado('outputRetiradas')">Copiar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
